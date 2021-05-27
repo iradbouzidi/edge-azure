@@ -8,12 +8,12 @@ WORKDIR /usr/src/app
 ENV PATH /usr/src/app/node_modules/.bin:$PATH
 
 # install app dependencies
-COPY package.json ./
-COPY package-lock.json ./
+COPY front-end/package.json ./
+COPY front-end/package-lock.json ./
 RUN npm install --silent
 
 # add app
-COPY . ./
+COPY front-end/. ./
 
 # expose port
 EXPOSE 3000

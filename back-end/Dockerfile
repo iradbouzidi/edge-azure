@@ -18,6 +18,6 @@ RUN pip3 install Flask==1.1.2 \
 
 EXPOSE 5000
 
-ADD app.py /
+ADD back-end/app.py /
 
 CMD ["flask", "run", "--host", "0.0.0.0", "--port","5000"]
