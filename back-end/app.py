@@ -6,6 +6,11 @@ import psycopg2
 import cv2
 import numpy as np
 import re
+from paho.mqtt import client as mqtt
+import time
+import datetime
+import json
+import random
 
 
 # Get the relativ path to this file (we will use it later)
@@ -14,7 +19,6 @@ FILE_PATH = "/app"
 # * ---------- Create App --------- *
 app = Flask(__name__)
 CORS(app, support_credentials=True)
-
 
 
 # * ---------- DATABASE CONFIG --------- *
@@ -26,19 +30,75 @@ CORS(app, support_credentials=True)
 
 def DATABASE_CONNECTION():
     return psycopg2.connect(user="ujwbtgmu",
-    password="KMYz8yHoeoIavScyMk-Y2GmJJYWxikWM",
-    host="queenie.db.elephantsql.com",
-    port="5432", database="ujwbtgmu")
+                            password="KMYz8yHoeoIavScyMk-Y2GmJJYWxikWM",
+                            host="queenie.db.elephantsql.com",
+                            port="5432", database="ujwbtgmu")
 
 
+def publish():
+    def on_subscribe(client, userdata, mid, granted_qos):
+        print('Subscribed for m' + str(mid))
+
+    def on_connect(client, userdata, flags, rc):
+        print("Connected with result code "+str(rc))
+
+    def on_message(client, userdata, message):
+        print("Received message '" + str(message.payload) + "' on topic '" +
+              message.topic + "' with QoS " + str(message.qos))
+
+    def on_log(client, userdata, level, buf):
+        print("log: ", buf)
+    device_id = "rpi-core"  # Add device id
+    iot_hub_name = "MWIoTHub"  # Add iot hub name
+    sas_token = "HostName=MWIoTHub.azure-devices.net;DeviceId=rpi-core;SharedAccessSignature=SharedAccessSignature sr=MWIoTHub.azure-devices.net%2Fdevices%2Frpi-core&sig=ZrlZj3xp%2BQa2MMqq2b9ejYnnewqRi5ZcbI9WS%2B2SkeQ%3D&se=1623001351"  # Add sas token string
+    client = mqtt.Client(client_id=device_id,
+                         protocol=mqtt.MQTTv311,  clean_session=False)
+
+    client.on_log = on_log
+    client.tls_set_context(context=None)
+
+    # Set up client credentials
+    username = "{}.azure-devices.net/{}/api-version=2018-06-30".format(
+        iot_hub_name, device_id)
+    client.username_pw_set(username=username, password=sas_token)
+
+    # Connect to the Azure IoT Hub
+    client.on_connect = on_connect
+    client.connect(iot_hub_name+".azure-devices.net", port=8883)
+    # Publish
+    time.sleep(1)
+    for x in range(3):
+        exp = datetime.datetime.utcnow()
+        abcstring1 = {
+            "AI01": random.randint(0, 100)
+        }
+        data_out1 = json.dumps(abcstring1)
+        client.publish("devices/{device_id}/messages/events/".format(
+            device_id=device_id), payload=data_out1, qos=1, retain=False)
+        print("Publishing on devices/" + device_id +
+              "/messages/events/", data_out1)
+        time.sleep(5)
+    # Subscribe
+    client.on_message = on_message
+    client.on_subscribe = on_subscribe
+    client.subscribe(
+        "devices/{device_id}/messages/devicebound/#".format(device_id=device_id))
+    client.loop_forever()
+
+
+print("hi")
 
 # * --------------------  ROUTES ------------------- *
 # * ---------- Test server ---------- *
+
+
 @app.route('/')
 def index():
     return "<html>server side is live</html>"
 
 # * ---------- Get data from the face recognition ---------- *
+
+
 @app.route('/receive_data', methods=['POST'])
 def get_receive_data():
     if request.method == 'POST':
@@ -60,23 +120,25 @@ def get_receive_data():
 
             # If use is already in the DB for today:
             if result:
-               print('user IN')
-               image_path = f"{FILE_PATH}/assets/img/{json_data['date']}/{json_data['name']}/departure.jpg"
+                print('user IN')
+                image_path = f"{FILE_PATH}/assets/img/{json_data['date']}/{json_data['name']}/departure.jpg"
 
                 # Save image
-               os.makedirs(f"{FILE_PATH}/assets/img/{json_data['date']}/{json_data['name']}", exist_ok=True)
-               cv2.imwrite(image_path, np.array(json_data['picture_array']))
-               json_data['picture_path'] = image_path
+                os.makedirs(
+                    f"{FILE_PATH}/assets/img/{json_data['date']}/{json_data['name']}", exist_ok=True)
+                cv2.imwrite(image_path, np.array(json_data['picture_array']))
+                json_data['picture_path'] = image_path
 
                 # Update user in the DB
-               update_user_querry = f"UPDATE users SET departure_time = '{json_data['hour']}', departure_picture = '{json_data['picture_path']}' WHERE name = '{json_data['name']}' AND date = '{json_data['date']}'"
-               cursor.execute(update_user_querry)
+                update_user_querry = f"UPDATE users SET departure_time = '{json_data['hour']}', departure_picture = '{json_data['picture_path']}' WHERE name = '{json_data['name']}' AND date = '{json_data['date']}'"
+                cursor.execute(update_user_querry)
 
             else:
                 print("user OUT")
                 # Save image
                 image_path = f"{FILE_PATH}/assets/img/history/{json_data['date']}/{json_data['name']}/arrival.jpg"
-                os.makedirs(f"{FILE_PATH}/assets/img/history/{json_data['date']}/{json_data['name']}", exist_ok=True)
+                os.makedirs(
+                    f"{FILE_PATH}/assets/img/history/{json_data['date']}/{json_data['name']}", exist_ok=True)
                 cv2.imwrite(image_path, np.array(json_data['picture_array']))
                 json_data['picture_path'] = image_path
 
@@ -117,11 +179,11 @@ def get_employee(name):
 
         # if the user exist in the db:
         if result:
-            print('RESULT: ',result)
+            print('RESULT: ', result)
             # Structure the data and put the dates in string for the front
-            for k,v in enumerate(result):
+            for k, v in enumerate(result):
                 answer_to_send[k] = {}
-                for ko,vo in enumerate(result[k]):
+                for ko, vo in enumerate(result[k]):
                     answer_to_send[k][ko] = str(vo)
             print('answer_to_send: ', answer_to_send)
         else:
@@ -188,7 +250,8 @@ def add_employee():
         print(request.form['nameOfEmployee'])
 
         # Store it in the folder of the know faces:
-        file_path = os.path.join(f"{FILE_PATH}/assets/img/users/{request.form['nameOfEmployee']}.jpg")
+        file_path = os.path.join(
+            f"{FILE_PATH}/assets/img/users/{request.form['nameOfEmployee']}.jpg")
         image_file.save(file_path)
         answer = 'new employee succesfully added'
     except:
@@ -228,7 +291,6 @@ def delete_employee(name):
     return jsonify(answer)
 
 
-                                 
 # * -------------------- RUN SERVER -------------------- *
 if __name__ == '__main__':
     # * --- DEBUG MODE: --- *
