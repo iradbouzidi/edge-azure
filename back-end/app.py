@@ -14,7 +14,7 @@ import random
 
 
 # Get the relativ path to this file (we will use it later)
-#FILE_PATH = "/home/pi/DOCKERS"
+# FILE_PATH = "/home/pi/DOCKERS"
 FILE_PATH = "/app"
 # * ---------- Create App --------- *
 app = Flask(__name__)
@@ -22,11 +22,11 @@ CORS(app, support_credentials=True)
 
 
 # * ---------- DATABASE CONFIG --------- *
-#DATABASE_USER = os.environ['DATABASE_USER']
-#DATABASE_PASSWORD = os.environ['DATABASE_PASSWORD']
-#DATABASE_HOST = os.environ['DATABASE_HOST']
-#DATABASE_PORT = os.environ['DATABASE_PORT']
-#DATABASE_NAME = os.environ['DATABASE_NAME']
+# DATABASE_USER = os.environ['DATABASE_USER']
+# DATABASE_PASSWORD = os.environ['DATABASE_PASSWORD']
+# DATABASE_HOST = os.environ['DATABASE_HOST']
+# DATABASE_PORT = os.environ['DATABASE_PORT']
+# DATABASE_NAME = os.environ['DATABASE_NAME']
 
 def DATABASE_CONNECTION():
     return psycopg2.connect(user="ujwbtgmu",
@@ -50,7 +50,8 @@ def publish():
         print("log: ", buf)
     device_id = "rpi-core"  # Add device id
     iot_hub_name = "MWIoTHub"  # Add iot hub name
-    sas_token = "HostName=MWIoTHub.azure-devices.net;DeviceId=rpi-core;SharedAccessSignature=SharedAccessSignature sr=MWIoTHub.azure-devices.net%2Fdevices%2Frpi-core&sig=ZrlZj3xp%2BQa2MMqq2b9ejYnnewqRi5ZcbI9WS%2B2SkeQ%3D&se=1623001351"  # Add sas token string
+    sas_token = "SharedAccessSignature sr=MWIoTHub.azure-devices.net%2Fdevices%2Frpi-core&sig=VFRsENBd7LnjPlIdTyJRIN%2BiiGjLW%2Fht1vBjiz1ytQI%3D&se=1623091322"  # Add sas token string
+
     client = mqtt.Client(client_id=device_id,
                          protocol=mqtt.MQTTv311,  clean_session=False)
 
@@ -65,28 +66,25 @@ def publish():
     # Connect to the Azure IoT Hub
     client.on_connect = on_connect
     client.connect(iot_hub_name+".azure-devices.net", port=8883)
+
     # Publish
     time.sleep(1)
-    for x in range(3):
-        exp = datetime.datetime.utcnow()
-        abcstring1 = {
-            "AI01": random.randint(0, 100)
-        }
-        data_out1 = json.dumps(abcstring1)
-        client.publish("devices/{device_id}/messages/events/".format(
-            device_id=device_id), payload=data_out1, qos=1, retain=False)
-        print("Publishing on devices/" + device_id +
-              "/messages/events/", data_out1)
-        time.sleep(5)
+    exp = datetime.datetime.utcnow()
+    abcstring1 = {
+        "AI01": random.randint(0, 100)
+    }
+    data_out1 = json.dumps(abcstring1)
+    client.publish("devices/{device_id}/messages/events/".format(
+        device_id=device_id), payload=data_out1, qos=1, retain=False)
+    print("Publishing on devices/" + device_id +
+          "/messages/events/", data_out1)
+    time.sleep(5)
     # Subscribe
     client.on_message = on_message
     client.on_subscribe = on_subscribe
     client.subscribe(
         "devices/{device_id}/messages/devicebound/#".format(device_id=device_id))
     client.loop_forever()
-
-
-print("hi")
 
 # * --------------------  ROUTES ------------------- *
 # * ---------- Test server ---------- *
