@@ -11,7 +11,6 @@ RUN apt-get -qy clean \
 	&& apt-get -qy autoremove \
 	&& rm -rf /var/lib/{apt,dpkg,cache,log}
 
-
 RUN pip3 install face_recognition==1.3.0 \
     requests==2.25.1 \
     numpy==1.20.2 \
