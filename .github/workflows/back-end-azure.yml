@@ -33,6 +33,6 @@ jobs:
           platforms: linux/arm/v7
           push: true
           tags: |
-            irad1994/back-end:azure
-          cache-from: type=registry,ref=irad1994/back-end:azure
+            irad1994/back-end:test
+          cache-from: type=registry,ref=irad1994/back-end:test
           cache-to: type=inline
