@@ -35,7 +35,7 @@ def DATABASE_CONNECTION():
                             port="5432", database="ujwbtgmu")
 
 
-def publish_mqtt():
+def PUBLISH_USER(message):
     def on_subscribe(client, userdata, mid, granted_qos):
         print('Subscribed for m' + str(mid))
 
@@ -51,7 +51,8 @@ def publish_mqtt():
 
     device_id = "rpi-core"  # Add device id
     iot_hub_name = "MWIoTHub"  # Add iot hub name
-    sas_token = "SharedAccessSignature sr=MWIoTHub.azure-devices.net%2Fdevices%2Frpi-core&sig=ognN1vVn9%2FTjecPnONB0qbsdYmwkFqQCjkcenGF4BXk%3D&se=1654611723"
+    # sas_token = "SharedAccessSignature sr=MWIoTHub.azure-devices.net%2Fdevices%2Frpi-core&sig=VFRsENBd7LnjPlIdTyJRIN%2BiiGjLW%2Fht1vBjiz1ytQI%3D&se=1623091322"  # Add sas token string
+    sas_token = "SharedAccessSignature sr=MWIoTHub.azure-devices.net%2Fdevices%2Frpi-core&sig=j%2B3vsCqOvxpE5s52QLu3IcwyUKhLPEbaznS7vRIWXN8%3D&se=1654612365"
     client = mqtt.Client(client_id=device_id,
                          protocol=mqtt.MQTTv311,  clean_session=False)
 
@@ -71,9 +72,9 @@ def publish_mqtt():
     # time.sleep(1)
     # exp = datetime.datetime.utcnow()
     abcstring1 = {
-        "AI01": random.randint(0, 100)
+        "AI01": message
     }
-    data_out1 = "hello"
+    data_out1 = json.dumps(abcstring1)
     client.publish("devices/{device_id}/messages/events/".format(
         device_id=device_id), payload=data_out1, qos=1, retain=False)
     print("Publishing on devices/" + device_id +
@@ -129,8 +130,8 @@ def get_receive_data():
 
                 # Update user in the DB
                 update_user_querry = f"UPDATE users SET departure_time = '{json_data['hour']}', departure_picture = '{json_data['picture_path']}' WHERE name = '{json_data['name']}' AND date = '{json_data['date']}'"
+                PUBLISH_USER(message=update_user_querry)
                 cursor.execute(update_user_querry)
-                publish_mqtt()
 
             else:
                 print("user OUT")
@@ -143,8 +144,8 @@ def get_receive_data():
 
                 # Create a new row for the user today:
                 insert_user_querry = f"INSERT INTO users (name, date, arrival_time, arrival_picture) VALUES ('{json_data['name']}', '{json_data['date']}', '{json_data['hour']}', '{json_data['picture_path']}')"
+                PUBLISH_USER(message=insert_user_querry)
                 cursor.execute(insert_user_querry)
-                publish_mqtt()
 
         except (Exception, psycopg2.DatabaseError) as error:
             print("ERROR DB: ", error)
