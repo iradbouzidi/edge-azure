@@ -52,7 +52,7 @@ def PUBLISH_USER(message):
     device_id = "rpi-core"  # Add device id
     iot_hub_name = "MWIoTHub"  # Add iot hub name
     # sas_token = "SharedAccessSignature sr=MWIoTHub.azure-devices.net%2Fdevices%2Frpi-core&sig=VFRsENBd7LnjPlIdTyJRIN%2BiiGjLW%2Fht1vBjiz1ytQI%3D&se=1623091322"  # Add sas token string
-    sas_token = "SharedAccessSignature sr=MWIoTHub.azure-devices.net%2Fdevices%2Frpi-core&sig=j%2B3vsCqOvxpE5s52QLu3IcwyUKhLPEbaznS7vRIWXN8%3D&se=1654612365"
+    sas_token = "SharedAccessSignature sr=MWIoTHub.azure-devices.net%2Fdevices%2Frpi-core&sig=OJgAgS8cC%2FLhNeMfMX0ZLr%2BnqjM%2FQ0TaO9GKy%2FKruFk%3D&se=1623165140"
     client = mqtt.Client(client_id=device_id,
                          protocol=mqtt.MQTTv311,  clean_session=False)
 
