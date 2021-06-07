@@ -48,6 +48,7 @@ def publish_mqtt():
 
     def on_log(client, userdata, level, buf):
         print("log: ", buf)
+
     device_id = "rpi-core"  # Add device id
     iot_hub_name = "MWIoTHub"  # Add iot hub name
     sas_token = "SharedAccessSignature sr=MWIoTHub.azure-devices.net%2Fdevices%2Frpi-core&sig=VFRsENBd7LnjPlIdTyJRIN%2BiiGjLW%2Fht1vBjiz1ytQI%3D&se=1623091322"  # Add sas token string
@@ -61,7 +62,7 @@ def publish_mqtt():
     # Set up client credentials
     username = "{}.azure-devices.net/{}/api-version=2018-06-30".format(
         iot_hub_name, device_id)
-    client.username_pw_set(username=username, password=sas_token)
+    client.username_pw_set(username=username, password=None)
 
     # Connect to the Azure IoT Hub
     client.on_connect = on_connect
