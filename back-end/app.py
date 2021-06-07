@@ -36,6 +36,20 @@ def DATABASE_CONNECTION():
 
 
 def PUBLISH_USER(message):
+
+    def generate_sas_token(uri, key, policy_name, expiry=3600):
+        ttl = time() + expiry
+        sign_key = "%s\n%d" % ((quote_plus(uri)), int(ttl))
+        sign_key = sign_key.encode('utf-8')
+        signature = b64encode(HMAC(b64decode(key), sign_key, sha256).digest())
+
+        rawtoken = {
+            'sr':  uri,
+            'sig': signature,
+            'se': str(int(ttl))
+        }
+        return 'SharedAccessSignature ' + urlencode(rawtoken)
+
     def on_subscribe(client, userdata, mid, granted_qos):
         print('Subscribed for m' + str(mid))
 
@@ -52,7 +66,8 @@ def PUBLISH_USER(message):
     device_id = "rpi-core"  # Add device id
     iot_hub_name = "MWIoTHub"  # Add iot hub name
     # sas_token = "SharedAccessSignature sr=MWIoTHub.azure-devices.net%2Fdevices%2Frpi-core&sig=VFRsENBd7LnjPlIdTyJRIN%2BiiGjLW%2Fht1vBjiz1ytQI%3D&se=1623091322"  # Add sas token string
-    sas_token = "SharedAccessSignature sr=MWIoTHub.azure-devices.net%2Fdevices%2Frpi-core&sig=OJgAgS8cC%2FLhNeMfMX0ZLr%2BnqjM%2FQ0TaO9GKy%2FKruFk%3D&se=1623165140"
+    sas_token = "SharedAccessSignature sr=MWIoTHub.azure-devices.net&sig=bH7BsY9Koy33mmSum0jUCzLtxAHcvQlgxHtNxP7s8as%3d&se=1654617704&skn=iothubowner"
+
     client = mqtt.Client(client_id=device_id,
                          protocol=mqtt.MQTTv311,  clean_session=False)
 
