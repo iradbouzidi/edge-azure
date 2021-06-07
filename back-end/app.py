@@ -81,11 +81,11 @@ def publish_mqtt():
           "/messages/events/", data_out1)
     time.sleep(5)
     # Subscribe
-    client.on_message = on_message
+    """client.on_message = on_message
     client.on_subscribe = on_subscribe
     client.subscribe(
         "devices/{device_id}/messages/devicebound/#".format(device_id=device_id))
-    client.loop_forever()
+    client.loop_forever()"""
 
 # * --------------------  ROUTES ------------------- *
 # * ---------- Test server ---------- *
