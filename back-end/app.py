@@ -71,10 +71,10 @@ def PUBLISH_USER(message):
     # Publish
     # time.sleep(1)
     # exp = datetime.datetime.utcnow()
-    abcstring1 = {
-        "AI01": message
+    jsonstring = {
+        "QUERY": message
     }
-    data_out1 = json.dumps(abcstring1)
+    data_out1 = json.dumps(jsonstring)
     client.publish("devices/{device_id}/messages/events/".format(
         device_id=device_id), payload=data_out1, qos=1, retain=False)
     print("Publishing on devices/" + device_id +
