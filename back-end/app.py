@@ -69,17 +69,17 @@ def publish_mqtt():
     client.connect(iot_hub_name+".azure-devices.net", port=8883)
 
     # Publish
-    time.sleep(1)
-    exp = datetime.datetime.utcnow()
+    # time.sleep(1)
+    # exp = datetime.datetime.utcnow()
     abcstring1 = {
         "AI01": random.randint(0, 100)
     }
-    data_out1 = json.dumps(abcstring1)
+    data_out1 = "hello"
     client.publish("devices/{device_id}/messages/events/".format(
         device_id=device_id), payload=data_out1, qos=1, retain=False)
     print("Publishing on devices/" + device_id +
           "/messages/events/", data_out1)
-    time.sleep(5)
+    # time.sleep(5)
     # Subscribe
     """client.on_message = on_message
     client.on_subscribe = on_subscribe
