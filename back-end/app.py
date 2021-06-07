@@ -54,7 +54,7 @@ def PUBLISH_USER(message):
     def on_log(client, userdata, level, buf):
         print("log: ", buf)
 
-    def generate_sas_token(uri, key, policy_name, expiry=3600):
+    def generate_sas_token(uri, key, policy_name, expiry=900):
         ttl = time() + expiry
         sign_key = "%s\n%d" % ((quote_plus(uri)), int(ttl))
         sign_key = sign_key.encode('utf-8')
