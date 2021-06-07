@@ -91,7 +91,7 @@ def PUBLISH_USER(message):
     client.connect(iot_hub_name+".azure-devices.net", port=8883)
 
     # Publish
-    time.sleep(1)
+    #time.sleep(1)
     # exp = datetime.datetime.utcnow()
     jsonstring = {
         "QUERY": message
@@ -101,8 +101,8 @@ def PUBLISH_USER(message):
         device_id=device_id), payload=data_out1, qos=1, retain=False)
     print("Publishing on devices/" + device_id +
           "/messages/events/", data_out1)
-    time.sleep(5)
-    client.disconnect()
+    #time.sleep(5)
+    # client.disconnect()
 
     # Subscribe
     """client.on_message = on_message
