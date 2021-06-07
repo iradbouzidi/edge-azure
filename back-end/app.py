@@ -8,9 +8,12 @@ import numpy as np
 import re
 from paho.mqtt import client as mqtt
 import time
-import datetime
 import json
-import random
+from base64 import b64encode, b64decode
+from hashlib import sha256
+from time import time
+from urllib.parse import quote_plus, urlencode
+from hmac import HMAC
 
 
 # Get the relativ path to this file (we will use it later)
@@ -37,6 +40,20 @@ def DATABASE_CONNECTION():
 
 def PUBLISH_USER(message):
 
+    # FOR SUBSCRIBE
+    """def on_subscribe(client, userdata, mid, granted_qos):
+        print('Subscribed for m' + str(mid))
+
+    def on_message(client, userdata, message):
+        print("Received message '" + str(message.payload) + "' on topic '" +
+              message.topic + "' with QoS " + str(message.qos))"""
+
+    def on_connect(client, userdata, flags, rc):
+        print("Connected with result code "+str(rc))
+
+    def on_log(client, userdata, level, buf):
+        print("log: ", buf)
+
     def generate_sas_token(uri, key, policy_name, expiry=3600):
         ttl = time() + expiry
         sign_key = "%s\n%d" % ((quote_plus(uri)), int(ttl))
@@ -49,6 +66,51 @@ def PUBLISH_USER(message):
             'se': str(int(ttl))
         }
         return 'SharedAccessSignature ' + urlencode(rawtoken)
+
+    device_id = "rpi-core"  # Add device id
+    iot_hub_name = "MWIoTHub"  # Add iot hub name
+    device_key = "ECge0HWTD7OvdAhjgPup+6yUmdnUe35I/AFdiU8k2ZU="
+    # sas_token = "SharedAccessSignature sr=MWIoTHub.azure-devices.net%2Fdevices%2Frpi-core&sig=VFRsENBd7LnjPlIdTyJRIN%2BiiGjLW%2Fht1vBjiz1ytQI%3D&se=1623091322"  # Add sas token string
+    # sas_token = "SharedAccessSignature sr=MWIoTHub.azure-devices.net%2Fdevices%2Frpi-core&sig=3%2BMEKm1mlBVtIGJs%2FvYyr%2BJFXt1jhPDVmqUxkBVBeJ8%3D&se=1623170825"
+
+    client = mqtt.Client(client_id=device_id,
+                         protocol=mqtt.MQTTv311,  clean_session=False)
+
+    client.on_log = on_log
+    client.tls_set_context(context=None)
+
+    # Set up client credentials
+    username = "{}.azure-devices.net/{}/api-version=2018-06-30".format(
+        iot_hub_name, device_id)
+    client.username_pw_set(username=username, password=generate_sas_token(
+        iot_hub_name + ".azure-devices.net" + "/devices/" + device_id, device_key, device_id))
+
+    # Connect to the Azure IoT Hub
+    client.on_connect = on_connect
+    client.connect(iot_hub_name+".azure-devices.net", port=8883)
+
+    # Publish
+    # time.sleep(1)
+    # exp = datetime.datetime.utcnow()
+    jsonstring = {
+        "QUERY": message
+    }
+    data_out1 = json.dumps(jsonstring)
+    client.publish("devices/{device_id}/messages/events/".format(
+        device_id=device_id), payload=data_out1, qos=1, retain=False)
+    print("Publishing on devices/" + device_id +
+          "/messages/events/", data_out1)
+    # time.sleep(5)
+    # Subscribe
+    """client.on_message = on_message
+    client.on_subscribe = on_subscribe
+    client.subscribe(
+        "devices/{device_id}/messages/devicebound/#".format(device_id=device_id))
+    client.loop_forever()"""
+
+
+"""
+def PUBLISH_USER(message):
 
     def on_subscribe(client, userdata, mid, granted_qos):
         print('Subscribed for m' + str(mid))
@@ -96,11 +158,12 @@ def PUBLISH_USER(message):
           "/messages/events/", data_out1)
     # time.sleep(5)
     # Subscribe
-    """client.on_message = on_message
+    client.on_message = on_message
     client.on_subscribe = on_subscribe
     client.subscribe(
         "devices/{device_id}/messages/devicebound/#".format(device_id=device_id))
-    client.loop_forever()"""
+    client.loop_forever()
+"""
 
 # * --------------------  ROUTES ------------------- *
 # * ---------- Test server ---------- *
