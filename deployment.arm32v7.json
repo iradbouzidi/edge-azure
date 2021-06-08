@@ -56,6 +56,7 @@
               "createOptions": "{\"HostConfig\":{\"PortBindings\":{\"5000/tcp\":[{\"HostPort\":\"5000\"}]},\"Binds\":[\"/home/pi/storage/azure:/app\"]}}"
             }
           },
+
           "Recognition": {
             "version": "1.0",
             "type": "docker",
