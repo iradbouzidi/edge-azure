@@ -74,7 +74,7 @@ def PUBLISH_USER(message):
     # sas_token = "SharedAccessSignature sr=MWIoTHub.azure-devices.net%2Fdevices%2Frpi-core&sig=3%2BMEKm1mlBVtIGJs%2FvYyr%2BJFXt1jhPDVmqUxkBVBeJ8%3D&se=1623170825"
 
     client = mqtt.Client(client_id=device_id,
-                         protocol=mqtt.MQTTv311,  clean_session=False)
+                         protocol=mqtt.MQTTv311, clean_session=False)
 
     client.on_log = on_log
     client.tls_set_context(context=None)
@@ -91,17 +91,13 @@ def PUBLISH_USER(message):
     client.connect(iot_hub_name+".azure-devices.net", port=8883)
 
     # Publish
-    #time.sleep(1)
+    # time.sleep(1)
     # exp = datetime.datetime.utcnow()
-    jsonstring = {
-        "QUERY": message
-    }
-    data_out1 = json.dumps(jsonstring)
     client.publish("devices/{device_id}/messages/events/".format(
-        device_id=device_id), payload=data_out1, qos=1, retain=False)
+        device_id=device_id), payload=message, qos=1, retain=False)
     print("Publishing on devices/" + device_id +
-          "/messages/events/", data_out1)
-    #time.sleep(5)
+          "/messages/events/", message)
+    # time.sleep(5)
     # client.disconnect()
 
     # Subscribe
@@ -154,8 +150,16 @@ def get_receive_data():
 
                 # Update user in the DB
                 update_user_querry = f"UPDATE users SET departure_time = '{json_data['hour']}', departure_picture = '{json_data['picture_path']}' WHERE name = '{json_data['name']}' AND date = '{json_data['date']}'"
-                PUBLISH_USER(message=update_user_querry)
                 cursor.execute(update_user_querry)
+
+                # Publish user leave
+                data = {
+                    "name": f"{json_data['name']}",
+                    "date": f"{json_data['date']}",
+                    "departure_time": f"{json_data['hour']}"
+                }
+                user_data = json.dumps(data)
+                PUBLISH_USER(message=user_data)
 
             else:
                 print("user OUT")
@@ -168,8 +172,16 @@ def get_receive_data():
 
                 # Create a new row for the user today:
                 insert_user_querry = f"INSERT INTO users (name, date, arrival_time, arrival_picture) VALUES ('{json_data['name']}', '{json_data['date']}', '{json_data['hour']}', '{json_data['picture_path']}')"
-                PUBLISH_USER(message=insert_user_querry)
                 cursor.execute(insert_user_querry)
+
+                # Publish user arrival
+                data = {
+                    "name": f"{json_data['name']}",
+                    "date": f"{json_data['date']}",
+                    "arrival_time": f"{json_data['hour']}"
+                }
+                user_data = json.dumps(data)
+                PUBLISH_USER(message=user_data)
 
         except (Exception, psycopg2.DatabaseError) as error:
             print("ERROR DB: ", error)
