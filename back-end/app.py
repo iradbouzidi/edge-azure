@@ -148,8 +148,16 @@ def get_receive_data():
 
                 # Update user in the DB
                 update_user_querry = f"UPDATE users SET departure_time = '{json_data['hour']}', departure_picture = '{json_data['picture_path']}' WHERE name = '{json_data['name']}' AND date = '{json_data['date']}'"
-                PUBLISH_USER(message=update_user_querry)
                 cursor.execute(update_user_querry)
+
+                # Publish user leave
+                data = {
+                    "name": f"{json_data['name']}",
+                    "date": f"{json_data['date']}",
+                    "departure_time": f"{json_data['hour']}"
+                }
+                user_data = json.dumps(data)
+                PUBLISH_USER(message=user_data)
 
             else:
                 print("user OUT")
