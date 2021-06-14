@@ -70,8 +70,6 @@ def PUBLISH_USER(message):
     device_id = "rpi-core"  # Add device id
     iot_hub_name = "MWIoTHub"  # Add iot hub name
     device_key = "lkG1pZn5PAGTNDsMBQlHtRw2zr6FNQJOcOO0yu0WLtE="
-    # sas_token = "SharedAccessSignature sr=MWIoTHub.azure-devices.net%2Fdevices%2Frpi-core&sig=VFRsENBd7LnjPlIdTyJRIN%2BiiGjLW%2Fht1vBjiz1ytQI%3D&se=1623091322"  # Add sas token string
-    # sas_token = "SharedAccessSignature sr=MWIoTHub.azure-devices.net%2Fdevices%2Frpi-core&sig=3%2BMEKm1mlBVtIGJs%2FvYyr%2BJFXt1jhPDVmqUxkBVBeJ8%3D&se=1623170825"
 
     client = mqtt.Client(client_id=device_id,
                          protocol=mqtt.MQTTv311,  clean_session=False)
@@ -93,14 +91,10 @@ def PUBLISH_USER(message):
     # Publish
     # time.sleep(1)
     # exp = datetime.datetime.utcnow()
-    jsonstring = {
-        "QUERY": message
-    }
-    data_out1 = json.dumps(jsonstring)
     client.publish("devices/{device_id}/messages/events/".format(
-        device_id=device_id), payload=data_out1, qos=1, retain=False)
+        device_id=device_id), payload=message, qos=1, retain=False)
     print("Publishing on devices/" + device_id +
-          "/messages/events/", data_out1)
+          "/messages/events/", message)
     # time.sleep(5)
     client.disconnect()
 
@@ -117,7 +111,7 @@ def PUBLISH_USER(message):
 
 @app.route('/')
 def index():
-    return "<html>AZURE server side is live</html>"
+    return "<html>AZURE 1 server side is live</html>"
 
 # * ---------- Get data from the face recognition ---------- *
 
