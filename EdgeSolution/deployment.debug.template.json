@@ -3,7 +3,7 @@
   "modulesContent": {
     "$edgeAgent": {
       "properties.desired": {
-        "schemaVersion": "1.1",
+        "schemaVersion": "1.0",
         "runtime": {
           "type": "docker",
           "settings": {
@@ -22,7 +22,7 @@
           "edgeAgent": {
             "type": "docker",
             "settings": {
-              "image": "mcr.microsoft.com/azureiotedge-agent:1.2",
+              "image": "mcr.microsoft.com/azureiotedge-agent:1.1",
               "createOptions": {}
             }
           },
@@ -31,7 +31,7 @@
             "status": "running",
             "restartPolicy": "always",
             "settings": {
-              "image": "mcr.microsoft.com/azureiotedge-hub:1.2",
+              "image": "mcr.microsoft.com/azureiotedge-hub:1.1",
               "createOptions": {
                 "HostConfig": {
                   "PortBindings": {
@@ -45,11 +45,6 @@
                         "HostPort": "8883"
                       }
                     ],
-                    "1883/tcp": [
-                      {
-                        "HostPort": "1883"
-                      }
-                    ],
                     "443/tcp": [
                       {
                         "HostPort": "443"
@@ -58,18 +53,7 @@
                   }
                 }
               }
-            },
-            "env":{
-              "experimentalFeatures__mqttBrokerEnabled":{
-                 "value":"true"
-              },
-              "experimentalFeatures__enabled":{
-                 "value":"true"
-              },
-              "RuntimeLogLevel":{
-                 "value":"debug"
-              }
-           }
+            }
           }
         },
         "modules": {
@@ -145,12 +129,11 @@
     },
     "$edgeHub": {
       "properties.desired": {
-        "schemaVersion": "1.1",
+        "schemaVersion": "1.0",
         "routes": {
           "FrontEndToIoTHub": "FROM /messages/modules/FrontEnd/outputs/* INTO $upstream",
           "BackEndToIoTHub": "FROM /messages/modules/BackEnd/outputs/* INTO $upstream",
-          "RecognitionToIoTHub": "FROM /messages/modules/Recognition/outputs/* INTO $upstream",
-          "upstream": "FROM /messages/* INTO $upstream"
+          "RecognitionToIoTHub": "FROM /messages/modules/Recognition/outputs/* INTO $upstream"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200
