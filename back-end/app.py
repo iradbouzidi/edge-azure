@@ -111,7 +111,7 @@ def PUBLISH_USER(message):
 
 @app.route('/')
 def index():
-    return "<html>AZURE 1 server side is live</html>"
+    return "<html>AZURE back-end server side is live</html>"
 
 # * ---------- Get data from the face recognition ---------- *
 
