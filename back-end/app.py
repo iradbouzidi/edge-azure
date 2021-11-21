@@ -39,7 +39,6 @@ def DATABASE_CONNECTION():
 
 
 def PUBLISH_USER(message):
-
     # FOR SUBSCRIBE
     """def on_subscribe(client, userdata, mid, granted_qos):
         print('Subscribed for m' + str(mid))
@@ -107,15 +106,11 @@ def PUBLISH_USER(message):
 
 # * --------------------  ROUTES ------------------- *
 # * ---------- Test server ---------- *
-
-
 @app.route('/')
 def index():
     return "<html>AZURE back-end server side is live</html>"
 
 # * ---------- Get data from the face recognition ---------- *
-
-
 @app.route('/receive_data', methods=['POST'])
 def get_receive_data():
     if request.method == 'POST':
