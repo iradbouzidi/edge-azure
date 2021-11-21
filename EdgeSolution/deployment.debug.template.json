@@ -3,7 +3,7 @@
   "modulesContent": {
     "$edgeAgent": {
       "properties.desired": {
-        "schemaVersion": "1.0",
+        "schemaVersion": "1.1",
         "runtime": {
           "type": "docker",
           "settings": {
@@ -53,7 +53,18 @@
                   }
                 }
               }
-            }
+            },
+            "env":{
+              "experimentalFeatures__mqttBrokerEnabled":{
+                 "value":"true"
+              },
+              "experimentalFeatures__enabled":{
+                 "value":"true"
+              },
+              "RuntimeLogLevel":{
+                 "value":"debug"
+              }
+           }
           }
         },
         "modules": {
@@ -129,7 +140,7 @@
     },
     "$edgeHub": {
       "properties.desired": {
-        "schemaVersion": "1.0",
+        "schemaVersion": "1.2",
         "routes": {
           "FrontEndToIoTHub": "FROM /messages/modules/FrontEnd/outputs/* INTO $upstream",
           "BackEndToIoTHub": "FROM /messages/modules/BackEnd/outputs/* INTO $upstream",
@@ -138,7 +149,39 @@
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200
-        }
+        },
+        "mqttBroker":{
+          "authorizations":[
+             {
+                "identities":[
+                   "{{iot:identity}}"
+                ],
+                "allow":[
+                   {
+                      "operations":[
+                         "mqtt:connect"
+                      ]
+                   }
+                ]
+             },
+             {
+                "identities":[
+                   "{{iot:identity}}"
+                ],
+                "allow":[
+                   {
+                      "operations":[
+                         "mqtt:publish",
+                         "mqtt:subscribe"
+                      ],
+                      "resources":[
+                         "test_topic"
+                      ]
+                   }
+                ]
+             }
+          ]
+       }
       }
     }
   }
