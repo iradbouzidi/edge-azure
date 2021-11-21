@@ -71,7 +71,7 @@
           "FrontEnd": {
             "version": "1.0",
             "type": "docker",
-            "status": "running",
+            "status": "stopped",
             "restartPolicy": "always",
             "settings": {
               "image": "irad1994/front-end:azure",
@@ -91,7 +91,7 @@
           "BackEnd": {
             "version": "1.0",
             "type": "docker",
-            "status": "running",
+            "status": "stopped",
             "restartPolicy": "always",
             "settings": {
               "image": "irad1994/back-end:azure",
@@ -111,7 +111,7 @@
           "Recognition": {
             "version": "1.0",
             "type": "docker",
-            "status": "running",
+            "status": "stopped",
             "restartPolicy": "always",
             "settings": {
               "image": "irad1994/recognition:azure",
@@ -138,19 +138,19 @@
         }
       }
     },
-    "$edgeHub": {
-      "properties.desired": {
-        "schemaVersion": "1.2",
-        "routes": {
-          "FrontEndToIoTHub": "FROM /messages/modules/FrontEnd/outputs/* INTO $upstream",
-          "BackEndToIoTHub": "FROM /messages/modules/BackEnd/outputs/* INTO $upstream",
-          "RecognitionToIoTHub": "FROM /messages/modules/Recognition/outputs/* INTO $upstream",
-          "upstream": "FROM /messages/* INTO $upstream"
-        },
-        "storeAndForwardConfiguration": {
-          "timeToLiveSecs": 7200
-        },
-        "mqttBroker":{
+    "$edgeHub":{
+      "properties.desired":{
+         "schemaVersion":"1.2",
+         "routes":{
+            "FrontEndToIoTHub": "FROM /messages/modules/FrontEnd/outputs/* INTO $upstream",
+            "BackEndToIoTHub": "FROM /messages/modules/BackEnd/outputs/* INTO $upstream",
+            "RecognitionToIoTHub": "FROM /messages/modules/Recognition/outputs/* INTO $upstream",
+            "upstream": "FROM /messages/* INTO $upstream"
+         },
+         "storeAndForwardConfiguration":{
+            "timeToLiveSecs":7200
+         },
+         "mqttBroker":{
           "authorizations":[
              {
                 "identities":[
