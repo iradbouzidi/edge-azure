@@ -92,7 +92,7 @@ def PUBLISH_USER(message):
     # exp = datetime.datetime.utcnow()
     client.publish("devices/{device_id}/messages/events/".format( device_id=device_id), payload=message, qos=1, retain=False)
     print("Publishing on devices/" + device_id + "/messages/events/", message)
-    # time.sleep(5)
+    time.sleep(5)
     client.disconnect()
 
     # Subscribe
@@ -106,7 +106,7 @@ def PUBLISH_USER(message):
 # * ---------- Test server ---------- *
 @app.route('/')
 def index():
-    return "<html>AZURE backend server side is live</html>"
+    return "<html>AZURE backend server side is live 1</html>"
 
 # * ---------- Get data from the face recognition ---------- *
 @app.route('/receive_data', methods=['POST'])
