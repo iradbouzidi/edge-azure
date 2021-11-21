@@ -133,7 +133,8 @@
         "routes": {
           "FrontEndToIoTHub": "FROM /messages/modules/FrontEnd/outputs/* INTO $upstream",
           "BackEndToIoTHub": "FROM /messages/modules/BackEnd/outputs/* INTO $upstream",
-          "RecognitionToIoTHub": "FROM /messages/modules/Recognition/outputs/* INTO $upstream"
+          "RecognitionToIoTHub": "FROM /messages/modules/Recognition/outputs/* INTO $upstream",
+          "upstream": "FROM /messages/* INTO $upstream"
         },
         "storeAndForwardConfiguration": {
           "timeToLiveSecs": 7200
