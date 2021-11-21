@@ -71,25 +71,31 @@ def PUBLISH_USER(message):
     iot_hub_name = "MWIoTHub"  # Add iot hub name
     device_key = "lkG1pZn5PAGTNDsMBQlHtRw2zr6FNQJOcOO0yu0WLtE="
 
-    client = mqtt.Client(client_id=device_id, protocol=mqtt.MQTTv311,  clean_session=False)
+    client = mqtt.Client(client_id=device_id,
+                         protocol=mqtt.MQTTv311,  clean_session=False)
 
     client.on_log = on_log
     client.tls_set_context(context=None)
 
     # Set up client credentials
-    username = "{}.azure-devices.net/{}/api-version=2018-06-30".format(iot_hub_name, device_id)
-    client.username_pw_set(username=username, password=generate_sas_token(iot_hub_name + ".azure-devices.net/devices/" + device_id, device_key, device_id))
+    username = "{}.azure-devices.net/{}/api-version=2018-06-30".format(
+        iot_hub_name, device_id)
+    client.username_pw_set(username=username,
+                           password=generate_sas_token(
+                               iot_hub_name + ".azure-devices.net/devices/" + device_id, device_key, device_id))
 
     # Connect to the Azure IoT Hub
     client.on_connect = on_connect
-    client.connect(iot_hub_name+".azure-devices.net", port=1883)
+    client.connect(iot_hub_name+".azure-devices.net", port=8883)
 
     # Publish
     # time.sleep(1)
     # exp = datetime.datetime.utcnow()
-    client.publish("devices/{device_id}/messages/events/".format( device_id=device_id), payload=message, qos=1, retain=False)
-    print("Publishing on devices/" + device_id + "/messages/events/", message)
-    time.sleep(5)
+    client.publish("devices/{device_id}/messages/events/".format(
+        device_id=device_id), payload=message, qos=1, retain=False)
+    print("Publishing on devices/" + device_id +
+          "/messages/events/", message)
+    # time.sleep(5)
     client.disconnect()
 
     # Subscribe

@@ -45,6 +45,11 @@
                         "HostPort": "8883"
                       }
                     ],
+                    "1883/tcp": [
+                      {
+                        "HostPort": "1883"
+                      }
+                    ],
                     "443/tcp": [
                       {
                         "HostPort": "443"
@@ -71,7 +76,7 @@
           "FrontEnd": {
             "version": "1.0",
             "type": "docker",
-            "status": "stopped",
+            "status": "running",
             "restartPolicy": "always",
             "settings": {
               "image": "irad1994/front-end:azure",
@@ -91,7 +96,7 @@
           "BackEnd": {
             "version": "1.0",
             "type": "docker",
-            "status": "stopped",
+            "status": "running",
             "restartPolicy": "always",
             "settings": {
               "image": "irad1994/back-end:azure",
@@ -111,7 +116,7 @@
           "Recognition": {
             "version": "1.0",
             "type": "docker",
-            "status": "stopped",
+            "status": "running",
             "restartPolicy": "always",
             "settings": {
               "image": "irad1994/recognition:azure",
@@ -138,50 +143,18 @@
         }
       }
     },
-    "$edgeHub":{
-      "properties.desired":{
-         "schemaVersion":"1.2",
-         "routes":{
-            "FrontEndToIoTHub": "FROM /messages/modules/FrontEnd/outputs/* INTO $upstream",
-            "BackEndToIoTHub": "FROM /messages/modules/BackEnd/outputs/* INTO $upstream",
-            "RecognitionToIoTHub": "FROM /messages/modules/Recognition/outputs/* INTO $upstream",
-            "upstream": "FROM /messages/* INTO $upstream"
-         },
-         "storeAndForwardConfiguration":{
-            "timeToLiveSecs":7200
-         },
-         "mqttBroker":{
-          "authorizations":[
-             {
-                "identities":[
-                   "{{iot:identity}}"
-                ],
-                "allow":[
-                   {
-                      "operations":[
-                         "mqtt:connect"
-                      ]
-                   }
-                ]
-             },
-             {
-                "identities":[
-                   "{{iot:identity}}"
-                ],
-                "allow":[
-                   {
-                      "operations":[
-                         "mqtt:publish",
-                         "mqtt:subscribe"
-                      ],
-                      "resources":[
-                         "test_topic"
-                      ]
-                   }
-                ]
-             }
-          ]
-       }
+    "$edgeHub": {
+      "properties.desired": {
+        "schemaVersion": "1.1",
+        "routes": {
+          "FrontEndToIoTHub": "FROM /messages/modules/FrontEnd/outputs/* INTO $upstream",
+          "BackEndToIoTHub": "FROM /messages/modules/BackEnd/outputs/* INTO $upstream",
+          "RecognitionToIoTHub": "FROM /messages/modules/Recognition/outputs/* INTO $upstream",
+          "upstream": "FROM /messages/* INTO $upstream"
+        },
+        "storeAndForwardConfiguration": {
+          "timeToLiveSecs": 7200
+        }
       }
     }
   }
