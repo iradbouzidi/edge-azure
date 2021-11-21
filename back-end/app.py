@@ -79,7 +79,7 @@ def PUBLISH_USER(message):
     # Set up client credentials
     username = "{}.azure-devices.net/{}/api-version=2018-06-30".format(iot_hub_name, device_id)
     #SharedAccessSignature = "SharedAccessSignature sr=kevinsayIoT.azure-devices.net%2fdevices%2fpython&sig=ON2EYJR7R7ILlA1ChUC84rJSMWEBe%2fCJrBdb8lcIr7A%3d&se=1505515292"
-    sas = "SharedAccessSignature sr=MWIoTHub.azure-devices.net%2Fdevices%2Frpi-core%2Fmodules%2FBackEnd&sig=VPew8x1%2BylW5IJwjc6HOK1YbmYlADuyfZbGcOk1j7WI%3D&se=1637521273"
+    sas = "SharedAccessSignature sr=MWIoTHub.azure-devices.net%2Fdevices%2Frpi-core&sig=oqHxWdI5VuOtQnsvF6EvzJgPTMvrftNGcV7UU%2FC7XZ0%3D&se=1637522013"
     #client.username_pw_set(username=username, password=generate_sas_token(iot_hub_name + ".azure-devices.net/devices/" + device_id, device_key, device_id))
 
     client.username_pw_set(username=username, password=sas)
