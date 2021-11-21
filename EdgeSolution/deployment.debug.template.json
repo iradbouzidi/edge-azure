@@ -1,0 +1,144 @@
+{
+  "$schema-template": "2.0.0",
+  "modulesContent": {
+    "$edgeAgent": {
+      "properties.desired": {
+        "schemaVersion": "1.0",
+        "runtime": {
+          "type": "docker",
+          "settings": {
+            "minDockerVersion": "v1.25",
+            "loggingOptions": "",
+            "registryCredentials": {
+              "docker": {
+                "username": "$CONTAINER_REGISTRY_USERNAME_docker",
+                "password": "$CONTAINER_REGISTRY_PASSWORD_docker",
+                "address": "docker.io"
+              }
+            }
+          }
+        },
+        "systemModules": {
+          "edgeAgent": {
+            "type": "docker",
+            "settings": {
+              "image": "mcr.microsoft.com/azureiotedge-agent:1.2",
+              "createOptions": {}
+            }
+          },
+          "edgeHub": {
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "mcr.microsoft.com/azureiotedge-hub:1.2",
+              "createOptions": {
+                "HostConfig": {
+                  "PortBindings": {
+                    "5671/tcp": [
+                      {
+                        "HostPort": "5671"
+                      }
+                    ],
+                    "8883/tcp": [
+                      {
+                        "HostPort": "8883"
+                      }
+                    ],
+                    "443/tcp": [
+                      {
+                        "HostPort": "443"
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        },
+        "modules": {
+          "FrontEnd": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "irad1994/front-end:azure",
+              "createOptions": {
+                "NetworkingConfig": {
+                  "EndpointsConfig": {
+                    "host": {}
+                  }
+                },
+                "HostConfig": {
+                  "NetworkMode": "host",
+                  "Binds": ["/home/pi/storage/azure:/app"]
+                }
+              }
+            }
+          },
+          "BackEnd": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "irad1994/back-end:azure",
+              "createOptions": {
+                "NetworkingConfig": {
+                  "EndpointsConfig": {
+                    "host": {}
+                  }
+                },
+                "HostConfig": {
+                  "NetworkMode": "host",
+                  "Binds": ["/home/pi/storage/azure:/app"]
+                }
+              }
+            }
+          },
+          "Recognition": {
+            "version": "1.0",
+            "type": "docker",
+            "status": "running",
+            "restartPolicy": "always",
+            "settings": {
+              "image": "irad1994/recognition:azure",
+              "createOptions": {
+                "NetworkingConfig": {
+                  "EndpointsConfig": {
+                    "host": {}
+                  }
+                },
+                "HostConfig": {
+                  "NetworkMode": "host",
+                  "Binds": ["/home/pi/storage/azure:/app"],
+                  "Devices": [
+                    {
+                      "PathOnHost": "/dev/video0",
+                      "PathInContainer": "/dev/video0",
+                      "CgroupPermissions": "mrw"
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "$edgeHub": {
+      "properties.desired": {
+        "schemaVersion": "1.0",
+        "routes": {
+          "FrontEndToIoTHub": "FROM /messages/modules/FrontEnd/outputs/* INTO $upstream",
+          "BackEndToIoTHub": "FROM /messages/modules/BackEnd/outputs/* INTO $upstream",
+          "RecognitionToIoTHub": "FROM /messages/modules/Recognition/outputs/* INTO $upstream"
+        },
+        "storeAndForwardConfiguration": {
+          "timeToLiveSecs": 7200
+        }
+      }
+    }
+  }
+}
