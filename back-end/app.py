@@ -166,8 +166,16 @@ def get_receive_data():
 
                 # Create a new row for the user today:
                 insert_user_querry = f"INSERT INTO users (name, date, arrival_time, arrival_picture) VALUES ('{json_data['name']}', '{json_data['date']}', '{json_data['hour']}', '{json_data['picture_path']}')"
-                PUBLISH_USER(message=insert_user_querry)
                 cursor.execute(insert_user_querry)
+
+                # Publish user arrival
+                data = {
+                    "name": f"{json_data['name']}",
+                    "date": f"{json_data['date']}",
+                    "arrival_time": f"{json_data['hour']}"
+                }
+                user_data = json.dumps(data)
+                PUBLISH_USER(message=user_data)
 
         except (Exception, psycopg2.DatabaseError) as error:
             print("ERROR DB: ", error)
