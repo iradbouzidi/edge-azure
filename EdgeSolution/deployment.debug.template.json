@@ -60,7 +60,7 @@
           "FrontEnd": {
             "version": "1.0",
             "type": "docker",
-            "status": "running",
+            "status": "stopped",
             "restartPolicy": "always",
             "settings": {
               "image": "irad1994/front-end:azure",
@@ -80,7 +80,7 @@
           "BackEnd": {
             "version": "1.0",
             "type": "docker",
-            "status": "running",
+            "status": "stopped",
             "restartPolicy": "always",
             "settings": {
               "image": "irad1994/back-end:azure",
@@ -100,7 +100,7 @@
           "Recognition": {
             "version": "1.0",
             "type": "docker",
-            "status": "running",
+            "status": "stopped",
             "restartPolicy": "always",
             "settings": {
               "image": "irad1994/recognition:azure",
