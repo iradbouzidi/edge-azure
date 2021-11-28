@@ -78,7 +78,7 @@
             }
           },
           "BackEnd": {
-            "version": "1.1",
+            "version": "1.2",
             "type": "docker",
             "status": "running",
             "restartPolicy": "always",
@@ -98,7 +98,7 @@
             }
           },
           "Recognition": {
-            "version": "1.1",
+            "version": "1.",
             "type": "docker",
             "status": "running",
             "restartPolicy": "always",
